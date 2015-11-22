@@ -175,7 +175,7 @@ void cspline_nak( Points* data, CSplines* splines ){
 *****************************************************************************************/
 double cspline_eval( double x, CSplines* splines){
  
-    
+    return 0.0;
 	
 }
 
@@ -212,11 +212,11 @@ void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N){
 
   for(lcv = 1; lcv < N-1; lcv++){
     
-    d[lcv] = q[lcv] - (l[lcv-1]* r[lcv-1]]);
+    d[lcv] = q[lcv] - (l[lcv-1]* r[lcv-1]);
     l[lcv] = p[lcv] / d[lcv];
 
   }
-  d[N-1] = q[N-1] - (l[N-2]] * r[n-2]]);
+  d[N-1] = q[N-1] - (l[N-2] * r[N-2]);
 
   /* Forward substitution: solving for z */
   z[0] = B[0];
@@ -293,11 +293,11 @@ void printSplines(CSplines *splines){
 
       /* Temporary fix for the last point where there is no X1 value (out of bounds) */
       if(lcv == splines->N - 1){
-        fprintf(stdout, "%g X1 %g %g %g %g\n", splines->X[lcv], splines->d[lcv],    \ 
+        fprintf(stdout, "%g X1 %g %g %g %g\n", splines->X[lcv], splines->d[lcv], 
                 splines->c[lcv], splines->b[lcv], splines->a[lcv]);
       }
       else{
-        fprintf(stdout, "%g %g %g %g %g %g\n", splines->X[lcv], splines->X[lcv+1],  \
+        fprintf(stdout, "%g %g %g %g %g %g\n", splines->X[lcv], splines->X[lcv+1],
                 splines->d[lcv], splines->c[lcv], splines->b[lcv], splines->a[lcv]);
       }
 
@@ -317,14 +317,14 @@ void s_alloc(CSplines *splines, int N){
   splines->N = N;
 
   /* Allocate space for the coefficients and the partition */
-  splines->a = malloc(N * sizeof(doulbe));
-  splines->b = malloc(N * sizeof(doulbe));
-  splines->c = malloc(N * sizeof(doulbe));
-  splines->d = malloc(N * sizeof(doulbe));
-  splines->X = malloc(N * sizeof(doulbe));  /* Temporary until actual value is determined */
+  splines->a = malloc(N * sizeof(double));
+  splines->b = malloc(N * sizeof(double));
+  splines->c = malloc(N * sizeof(double));
+  splines->d = malloc(N * sizeof(double));
+  splines->X = malloc(N * sizeof(double));  /* Temporary until actual value is determined */
 
   /* Check for successful allocation */
-   if((NULL == a) || (NULL == b) || (NULL == c) || (NULL == d) || (NULL == X)){
+   if((NULL == splines->a) || (NULL == splines->b) || (NULL == splines->c) || (NULL == splines->d) || (NULL == splines->X)){
       fprintf(stderr, "Failed malloc: s_alloc\n");
    }
 
@@ -378,7 +378,7 @@ void p_alloc(Points *points, int N){
    points->Y = malloc(N * sizeof(double));
 
    /* Check for successful allocation */
-   if((NULL == X) || (NULL == Y)){
+   if((NULL == points->X) || (NULL == points->Y)){
       fprintf(stderr, "Failed malloc: p_alloc\n");
    }
 
@@ -410,7 +410,7 @@ void p_free(Points *points){
 
   /* Set the derivatives to 0.0 */
   points->y0 = 0.0;
-  points->yn = 0.0
+  points->yn = 0.0;
   
   /* Set the pointer to null in case of attempted future use */
   points = NULL;
