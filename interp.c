@@ -256,6 +256,20 @@ void printSplines(CSplines *splines){
  Errors:  prints an error message and exits 
 *****************************************************************************************/
 void s_alloc(CSplines *splines, int N){
+  /* Set the number of splines */
+  splines->N = N;
+
+  /* Allocate space for the coefficients and the partition */
+  splines->a = malloc(N * sizeof(doulbe));
+  splines->b = malloc(N * sizeof(doulbe));
+  splines->c = malloc(N * sizeof(doulbe));
+  splines->d = malloc(N * sizeof(doulbe));
+  splines->X = malloc(N * sizeof(doulbe));  /* Temporary until actual value is determined */
+
+  /* Check for successful allocation */
+   if((NULL == a) || (NULL == b) || (NULL == c) || (NULL == d) || (NULL == X)){
+      fprintf(stderr, "Failed malloc: s_alloc\n");
+   }
 
 }
 
@@ -267,6 +281,18 @@ void s_alloc(CSplines *splines, int N){
  Errors:  none
 *****************************************************************************************/
 void s_free(CSplines *splines){
+  /* Set the size to 0 */
+  splines->N = 0;
+
+  /* Free the space for the coefficients and the partition*/
+  free(splines->a);
+  free(splines->b);
+  free(splines->c);
+  free(splines->d);
+  free(splines->X);
+  
+  /* Set the pointer to NULL in case of attempted future use */
+  splines = NULL;
  
 }
 
@@ -294,6 +320,11 @@ void p_alloc(Points *points, int N){
    /* Allocate space for X and Y data */
    points->X = malloc(N * sizeof(double));
    points->Y = malloc(N * sizeof(double));
+
+   /* Check for successful allocation */
+   if((NULL == X) || (NULL == Y)){
+      fprintf(stderr, "Failed malloc: p_alloc\n");
+   }
 
    /* Set the derivatives of the first and last points */
    /* Temporarily set to 0.0 */
