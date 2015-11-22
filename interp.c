@@ -27,33 +27,47 @@
  Errors:  prints an message and exits 
 *****************************************************************************************/
 void cspline_natural(Points* data, CSplines* splines){
+  int lcv;  /* Loop counting variable */
+  double *h;  /* The difference vector */
 
+  /* Size of h = N-2 */
+  h = malloc((splines->N)-1) * sizeof(double));
+
+  if(NULL == h){
+    fprintf(stderr, "Failed malloc: cspline_natural\n");
+    return;
+  }
+
+  /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
+  for(lcv = 0; lcv < (data->N)-1; lcv++){
+
+    h[lcv] = data->X[lcv+1] - data->X[lcv];
+
+  }
 	
-    /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
+  /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
+                                            -----------      ------------ , j= 1..N-1
+                                                hj            hj -1 */
  
-	
-    /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
-                                              -----------      ------------ , j= 1..N-1
-                                                 hj            hj -1 */
- 
+
     
-    /* Generate the outside symmetric tri-diagonal matrix from h1 to hn-2  */
+  /* Generate the outside symmetric tri-diagonal matrix from h1 to hn-2  */
   
     
-    /* Generate the center diagonal of the symmetric tri-diagonal matrix 
+  /* Generate the center diagonal of the symmetric tri-diagonal matrix 
         2(h0+h1)       0 to n-2 inclusive                                 */
  
     
-    /* Use the general tri-diagonal solver to find spline value c */
+  /* Use the general tri-diagonal solver to find spline value c */
  
     
-    /* Initial "c" condition, zero curvature at the end points */
+  /* Initial "c" condition, zero curvature at the end points */
  
     
-    /* Copy the solution of the tri-diagonal value c into the spline structure */
+  /* Copy the solution of the tri-diagonal value c into the spline structure */
  
     
-    /* Solve for A, B, and D. */
+  /* Solve for A, B, and D. */
  
 }
 
@@ -74,9 +88,23 @@ void cspline_natural(Points* data, CSplines* splines){
  Errors:  none
 *****************************************************************************************/
 void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
+  int lcv;  /* Loop counting variable */
+  double *h;  /* The difference vector */
 
-	
-    /* Generate the h vector: notes: hj = xj+1  -  xj*/
+  /* Size of h = N-2 */
+  h = malloc((splines->N)-1) * sizeof(double));
+
+  if(NULL == h){
+    fprintf(stderr, "Failed malloc: cspline_natural\n");
+    return;
+  }
+
+  /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
+  for(lcv = 0; lcv < (data->N)-1; lcv++){
+
+    h[lcv] = data->X[lcv+1] - data->X[lcv];
+
+  }
  
     
 	/* Find the alpha vector 
@@ -121,9 +149,23 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
  Errors:  none
 ***************************************************************************************/
 void cspline_nak( Points* data, CSplines* splines ){
+	int lcv;  /* Loop counting variable */
+  double *h;  /* The difference vector */
 
-    
-	/* Find the h vector: notes: hj = xj+1  -  xj*/
+  /* Size of h = N-2 */
+  h = malloc((splines->N)-1) * sizeof(double));
+
+  if(NULL == h){
+    fprintf(stderr, "Failed malloc: cspline_natural\n");
+    return;
+  }
+
+  /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
+  for(lcv = 0; lcv < (data->N)-1; lcv++){
+
+    h[lcv] = data->X[lcv+1] - data->X[lcv];
+
+  }
 
 	
    /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
