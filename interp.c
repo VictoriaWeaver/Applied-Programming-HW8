@@ -279,7 +279,28 @@ void s_free(CSplines *splines){
  Errors:  prints an error message and exits 
 *****************************************************************************************/
 void p_alloc(Points *points, int N){
- 
+ /* typedef struct
+  {
+   int     N;    /* Number of Elements in array  *
+   double *X;    /* Pointer to X data            *
+   double *Y;    /* Pointer to Y data            *
+   double y0;    /* Derivative of first point *
+   double yn;    /* Derivative of last point *
+  } Points;*/
+
+   /* Set the number of elements in the array */
+   points->N = N;
+
+   /* Allocate space for X and Y data */
+   points->X = malloc(N * sizeof(double));
+   points->Y = malloc(N * sizeof(double));
+
+   /* Set the derivatives of the first and last points */
+   /* Temporarily set to 0.0 */
+   points->y0 = 0.0;
+   points->yn = 0.0;
+
+
 }
 
 /***************************************************************************************
@@ -290,5 +311,17 @@ void p_alloc(Points *points, int N){
  Errors:  none 
 *****************************************************************************************/
 void p_free(Points *points){
+  /* Set the size to 0 */
+  points->N = 0;
+
+  /* Free the X and Y data sets */
+  free(points->X);
+  free(points->Y);
   
+  /* Set the derivatives to 0.0 */
+  points->y0 = 0.0;
+  points->yn = 0.0
+  
+  /* Set the pointer to null in case of attempted future use */
+  points = NULL;
 }
