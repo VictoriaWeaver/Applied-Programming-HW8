@@ -17,7 +17,7 @@ typedef struct
    double *b;    /* Pointer to Linear coefficients      */
    double *c;    /* Pointer to Quadratic coefficients   */
    double *d;    /* Pointer to Cubic coefficients       */
-   double *X;    /* Pointer interpolation interval  partition */
+   double *X;    /* Pointer interpolation interval partition */
    } CSplines;
 
 typedef struct

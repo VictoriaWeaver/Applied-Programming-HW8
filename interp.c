@@ -169,13 +169,41 @@ void cspline_nak( Points* data, CSplines* splines ){
  Evaluates a cubic spline at a give point 
 
  Where: double x         - Point at which splines should be evaluated
-        CSplines *plines - Pointer to Spline Structure
- Returns: double - The value of spline at desired point x or NAN if not fount
+        CSplines *splines - Pointer to Spline Structure
+ Returns: double - The value of spline at desired point x or NAN if not found
  Errors:  none
 *****************************************************************************************/
 double cspline_eval( double x, CSplines* splines){
- 
-    return 0.0;
+  int lcv;  /* Loop counting variable */  
+  double minBound;  /* Minimum x-value */
+  double value;   /* The value of the evaluated spline */
+  
+  minBound = splines->X[0];
+
+  if(x < minBound){
+    fprintf(stderr, "ERROR: Minimum Bound\n");
+    return NAN;
+  }
+
+  for(lcv = 0; lcv < (splines->N)-1; lcv++){
+    
+    if(x >= splines->X[lcv] && x < splines->X[lcv+1]){
+      break;
+    }
+
+    /* Note does not check for the last point, so the last spline will never be evaluated: NEEDS FIX */
+    if(lcv == (splines->N)-2){
+      fprintf(stderr, "ERROR: Minimum Bound\n");
+      return NAN;
+    }
+
+  }
+
+  value = (splines->a[lcv]) + (splines->b[lcv] * (x-splines->X[lcv]))
+          + (splines->c[lcv] * ((x-splines->X[lcv])*(x-splines->X[lcv]))) 
+          + (splines->d[lcv] * ((x-splines->X[lcv])*(x-splines->X[lcv])*(x-splines->X[lcv])));
+
+  return value;
 	
 }
 
@@ -203,6 +231,7 @@ void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N){
 
   if(NULL == d || NULL == z || NULL == l){
     fprintf(stderr, "Failed malloc: tridiagonal\n");
+    return;
   }
 
   /* LU Factorization or Elimination, right from the notes */
@@ -326,6 +355,7 @@ void s_alloc(CSplines *splines, int N){
   /* Check for successful allocation */
    if((NULL == splines->a) || (NULL == splines->b) || (NULL == splines->c) || (NULL == splines->d) || (NULL == splines->X)){
       fprintf(stderr, "Failed malloc: s_alloc\n");
+      return;
    }
 
 }
@@ -380,6 +410,7 @@ void p_alloc(Points *points, int N){
    /* Check for successful allocation */
    if((NULL == points->X) || (NULL == points->Y)){
       fprintf(stderr, "Failed malloc: p_alloc\n");
+      return;
    }
 
    /* Set the derivatives of the first and last points */
