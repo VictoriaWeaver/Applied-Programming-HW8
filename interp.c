@@ -286,10 +286,18 @@ void s_free(CSplines *splines){
 
   /* Free the space for the coefficients and the partition*/
   free(splines->a);
+  splines->a = NULL;
+
   free(splines->b);
+  
   free(splines->c);
+  splines->c = NULL;
+  
   free(splines->d);
+  splines->d = NULL;
+  
   free(splines->X);
+  splines->X = NULL;
   
   /* Set the pointer to NULL in case of attempted future use */
   splines = NULL;
@@ -347,8 +355,11 @@ void p_free(Points *points){
 
   /* Free the X and Y data sets */
   free(points->X);
+  points->X = NULL;
+
   free(points->Y);
-  
+  points->Y = NULL;
+
   /* Set the derivatives to 0.0 */
   points->y0 = 0.0;
   points->yn = 0.0
