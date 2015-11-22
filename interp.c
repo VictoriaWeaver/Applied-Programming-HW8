@@ -32,7 +32,7 @@ void cspline_natural(Points* data, CSplines* splines){
     /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
  
 	
-    /* Find the alpha vector: notes: alphaj = 3(yj+1 - yj)  -  (yj - yj-1) 
+    /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
                                               -----------      ------------ , j= 1..N-1
                                                  hj            hj -1 */
  
@@ -85,7 +85,7 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
                      h0                 */
 
     
-    /* Find the alpha vector: notes: alphaj = 3(yj+1 - yj)  -  (yj - yj-1) 
+    /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
                                               -----------      ------------ , j= 1..N-1
                                                  hj            hj -1 */
   
@@ -126,7 +126,7 @@ void cspline_nak( Points* data, CSplines* splines ){
 	/* Find the h vector: notes: hj = xj+1  -  xj*/
 
 	
-    /* Find the alpha vector: notes: alphaj = 3(yj+1 - yj)  -  (yj - yj-1) 
+   /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
                                               -----------      ------------ , j= 1..N-1
                                                  hj            hj -1 */
  
