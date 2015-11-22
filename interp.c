@@ -3,10 +3,6 @@
 *
 * Finds splines from given points with different interpolation methods.
 *
-* Author: Victoria Weaver
-* Applied Programming
-* Fall 2015
-* HW8
 *******************************************************************/
 
 #include <stdio.h>
@@ -30,7 +26,7 @@
  Returns: nothing    
  Errors:  prints an message and exits 
 *****************************************************************************************/
-extern void cspline_natural(Points* data, CSplines* splines){
+void cspline_natural(Points* data, CSplines* splines){
 
 	
     /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
@@ -48,13 +44,13 @@ extern void cspline_natural(Points* data, CSplines* splines){
         2(h0+h1)       0 to n-2 inclusive                                 */
  
     
-    /* Use the general tri-diagonal solver */
+    /* Use the general tri-diagonal solver to find spline value c */
  
     
-    /* Initial condition, zero curvature at the end points */
+    /* Initial "c" condition, zero curvature at the end points */
  
     
-    /* set the rest of the C vectors */
+    /* Copy the solution of the tri-diagonal value c into the spline structure */
  
     
     /* Solve for A, B, and D. */
@@ -77,7 +73,7 @@ extern void cspline_natural(Points* data, CSplines* splines){
  Returns: Nothing
  Errors:  none
 *****************************************************************************************/
-extern void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
+void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
 
 	
     /* Generate the h vector: notes: hj = xj+1  -  xj*/
@@ -105,10 +101,10 @@ extern void cspline_clamped( Points* data, double fpa, double fpb, CSplines* spl
     /* Generate the center diagonal of the symmetric tri-diagonal matrix */
 
     
-    /* Use the general tri-diagonal solver */
+    /* Use the general tri-diagonal solver to find spline data c */
  
     
-    /* Set the C vector into the points */
+    /* Copy the solution of the tri-diagonal value c into the spline structure */
  
 }
 
@@ -154,13 +150,16 @@ void cspline_nak( Points* data, CSplines* splines ){
     /*       3hn-1 * 2hn-2 * hn-1**2/hn-2         */
  
     
-     /* Use the general tri-diagonal solver, results returned in c */
+     /* Use the general tri-diagonal solver, find spline value c, results returned in vector c */
 
     
     /* Set the C vector into the points 
                   = 1 + h1/h0* c0 - h0/h1 * c1              */
  
-    
+ 
+    /* Copy the solution of the tri-diagonal value c into the spline structure */
+ 
+ 
     /* Solve for A, B, and D. */
  
 }
@@ -174,10 +173,10 @@ void cspline_nak( Points* data, CSplines* splines ){
  Returns: double - The value of spline at desired point x or NAN if not fount
  Errors:  none
 *****************************************************************************************/
-extern double cspline_eval( double x, CSplines* splines){
+double cspline_eval( double x, CSplines* splines){
  
     
-	return 0.0;
+	
 }
 
 
@@ -188,13 +187,13 @@ extern double cspline_eval( double x, CSplines* splines){
  Where: double *p - pointer to the bottom outer vector - part of L
         double *q - pointer to the top other outer vector - part of U
         double *r - pointer to the center vector          - part of U
-        double* x - resulting solution vector, x returned
+        double* x - resulting solution vector, x returned, the logical "c"
         double *B - pointer to value matrix - alpha
         int N     - Number of elements
   Returns: nothing
   Errors:  prints an error and exits
 *****************************************************************************************/
-static void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N){
+void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N){
  
     
     /* LU Factorization or Elimination, right from the notes */
@@ -203,7 +202,15 @@ static void tridiagonal(double *p, double *q, double *r, double* x, double *B, i
 
 
 /***************************************************************************************
- Finds the A, B, D, and X poly values
+ Finds the A, B, D, and X poly values using the following
+        aj = yj
+        bj = yj+1 - yj      cj+1 + 2cj
+            ----------- -  ---------- hj
+                hj             3
+        cj = passed in from tridiagional solution
+        dj = cj+1 - cj
+            -----------
+                3h
   
  Where: CSplines *Splines - Pointer to Spline Structure, data returned here    
         double *h         - difference vector: e.g. hj = xj+1  -  xj*
@@ -212,8 +219,21 @@ static void tridiagonal(double *p, double *q, double *r, double* x, double *B, i
  Errors:  none 
 *****************************************************************************************/
 void polySolve(CSplines *splines, double *h, Points *points){
-
+        /*  aj = yj */
+       
+        
+        /*  b[j] = yj+1 - yj      cj+1 + 2cj
+                  ----------- -  ---------- hj
+                       hj             3         */
+         
+        /* d[j] = cj+1 - cj
+                -----------
+                     3h        */
+        
+        /* Copy the associated points */
+   
 }
+
 
 /***************************************************************************************
  Prints the splines to standard out 

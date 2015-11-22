@@ -27,8 +27,6 @@ typedef struct
    double *Y;    /* Pointer to Y data            */
    double y0;    /* Derivative of first point */
    double yn;    /* Derivative of last point */
-   int  Size;    /* Size of dynamic arrays       */
-   int  Next;    /* Index to next point in array */
   } Points;
 
 /* Define NAN if this compiler does not */ 
@@ -38,16 +36,16 @@ typedef struct
   
 /* Function Prototypes, add more if needed */
 
-extern void cspline_clamped( Points*, double, double, CSplines*);
-extern void cspline_natural( Points*, CSplines* );
+void cspline_clamped( Points*, double, double, CSplines*);
+void cspline_natural( Points*, CSplines* );
 void cspline_nak( Points*, CSplines* );
-extern double cspline_eval( double, CSplines* );
+double cspline_eval( double, CSplines* );
 void polySolve(CSplines *splines, double *h, Points *points);
 void printSplines(CSplines *splines);
 void s_alloc(CSplines *splines, int N);
 void s_free(CSplines *splines);
 void p_alloc(Points *points, int N);
-static void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N);
+void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N);
 void p_free(Points *points);
 
 #endif /*  _INTERP_H_ */
