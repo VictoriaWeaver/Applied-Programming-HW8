@@ -244,7 +244,21 @@ void polySolve(CSplines *splines, double *h, Points *points){
  Errors:  none 
 *****************************************************************************************/
 void printSplines(CSplines *splines){
-  
+    int lcv;  /* Loop counting variable */
+
+    for(lcv = 0; lcv < (splines->N); lcv++){
+
+      /* Temporary fix for the last point where there is no X1 value (out of bounds) */
+      if(lcv == splines->N - 1){
+        fprintf(stdout, "%g X1 %g %g %g %g\n", splines->X[lcv], splines->d[lcv],    \ 
+                splines->c[lcv], splines->b[lcv], splines->a[lcv]);
+      }
+      else{
+        fprintf(stdout, "%g %g %g %g %g %g\n", splines->X[lcv], splines->X[lcv+1],  \
+                splines->d[lcv], splines->c[lcv], splines->b[lcv], splines->a[lcv]);
+      }
+
+    }
 }
 
 /***************************************************************************************
