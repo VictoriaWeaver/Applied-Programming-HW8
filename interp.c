@@ -185,8 +185,8 @@ double cspline_eval( double x, CSplines* splines){
              Uses:  Ax=B,  LU factorization:  Lz = B, Ux=z
  
  Where: double *p - pointer to the bottom outer vector - part of L
-        double *q - pointer to the top other outer vector - part of U
-        double *r - pointer to the center vector          - part of U
+        double *r - pointer to the top other outer vector - part of U
+        double *q - pointer to the center vector          - part of U
         double* x - resulting solution vector, x returned, the logical "c"
         double *B - pointer to value matrix - alpha
         int N     - Number of elements
@@ -194,10 +194,53 @@ double cspline_eval( double x, CSplines* splines){
   Errors:  prints an error and exits
 *****************************************************************************************/
 void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N){
- 
+  double *d, *l, *z;  /* Temporary vectors */
+  int lcv;        /* Loop counting variable */
+
+  d = malloc(N * sizeof(double));
+  z = malloc((N-1) * sizeof(double));
+  l = malloc((N-1) * sizeof(double));
+
+  if(NULL == d || NULL == z || NULL == l){
+    fprintf(stderr, "Failed malloc: tridiagonal\n");
+  }
+
+  /* LU Factorization or Elimination, right from the notes */
+  
+  d[0] = q[0];  
+  l[0] = p[0] / d[0];
+
+  for(lcv = 1; lcv < N-1; lcv++){
     
-    /* LU Factorization or Elimination, right from the notes */
- 
+    d[lcv] = q[lcv] - (l[lcv-1]* r[lcv-1]]);
+    l[lcv] = p[lcv] / d[lcv];
+
+  }
+  d[N-1] = q[N-1] - (l[N-2]] * r[n-2]]);
+
+  /* Forward substitution: solving for z */
+  z[0] = B[0];
+
+  for(lcv = 1; lcv < N; lcv++){
+    z[lcv] = B[lcv] - (l[lcv-1] * z[lcv-1]);
+  }
+
+  /* Back substitution: solving for x */
+  x[N-1] = z[N-1] / d[N-1];
+  
+  for (lcv = N-2; lcv >= 0; lcv--){
+    x[lcv] = (z[lcv] - x[lcv+1]) / d[lcv];
+  }
+
+  /* Free the temporary vectors */
+  free(d);
+  free(z);
+  free(l);
+
+  d = NULL;
+  z = NULL;
+  l = NULL;
+
 }
 
 
