@@ -32,9 +32,9 @@ void cspline_natural(Points* data, CSplines* splines){
     /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
  
 	
-    /* Find the alpha vector: notes: alphaj = 3(yj+1 - yj  - yj - yj-1)     j=1..n-1
-                                              ---------------------------
-                                                    hj         hj       */
+    /* Find the alpha vector: notes: alphaj = 3(yj+1 - yj)  -  (yj - yj-1) 
+                                              -----------      ------------ , j= 1..N-1
+                                                 hj            hj -1 */
  
     
     /* Generate the outside symmetric tri-diagonal matrix from h1 to hn-2  */
@@ -85,9 +85,9 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
                      h0                 */
 
     
-    /* Find the alpha vector: notes: alphaj = 3(yj+1 - yj  - yj - yj-1)      j=1...n-1
-                                              --------------------------    
-                                                    hj         hj       */
+    /* Find the alpha vector: notes: alphaj = 3(yj+1 - yj)  -  (yj - yj-1) 
+                                              -----------      ------------ , j= 1..N-1
+                                                 hj            hj -1 */
   
     
     /*  alphan = 3(yn' - (yn - yn-1)  )
@@ -126,9 +126,9 @@ void cspline_nak( Points* data, CSplines* splines ){
 	/* Find the h vector: notes: hj = xj+1  -  xj*/
 
 	
-    /* Find the alpha vector: notes: alphaj = 3(yj+1 - yj  - yj - yj-1)  
-                                               -----------   ------------  j= 1..N-1
-                                                    hj         hj       */
+    /* Find the alpha vector: notes: alphaj = 3(yj+1 - yj)  -  (yj - yj-1) 
+                                              -----------      ------------ , j= 1..N-1
+                                                 hj            hj -1 */
  
     
     /* Find the tri-diagonal matrix and solve for c */
