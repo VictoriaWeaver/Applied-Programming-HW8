@@ -370,15 +370,6 @@ void s_free(CSplines *splines){
  Errors:  prints an error message and exits 
 *****************************************************************************************/
 void p_alloc(Points *points, int N){
- /* typedef struct
-  {
-   int     N;    /* Number of Elements in array  *
-   double *X;    /* Pointer to X data            *
-   double *Y;    /* Pointer to Y data            *
-   double y0;    /* Derivative of first point *
-   double yn;    /* Derivative of last point *
-  } Points;*/
-
    /* Set the number of elements in the array */
    points->N = N;
 
