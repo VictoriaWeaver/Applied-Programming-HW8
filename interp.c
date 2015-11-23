@@ -27,13 +27,15 @@
  Errors:  prints an message and exits 
 *****************************************************************************************/
 void cspline_natural(Points* data, CSplines* splines){
-  int lcv;  /* Loop counting variable */
-  double *h;  /* The difference vector */
-
+  int lcv;        /* Loop counting variable */
+  double *h;      /* The difference vector */
+  double *alpha;  /* Alpha vector */
+  
   /* Size of h = N-2 */
-  h = malloc((splines->N)-1) * sizeof(double));
+  h = malloc(((splines->N)-1) * sizeof(double));
+  alpha = malloc(((splines->N)-1) * sizeof(double));
 
-  if(NULL == h){
+  if(NULL == h || NULL == alpha){
     fprintf(stderr, "Failed malloc: cspline_natural\n");
     return;
   }
@@ -48,7 +50,13 @@ void cspline_natural(Points* data, CSplines* splines){
   /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
                                             -----------      ------------ , j= 1..N-1
                                                 hj            hj -1 */
- 
+  for(lcv = 0; lcv < (data->N)-1; lcv++){
+    
+    int j = lcv+1;
+    
+    alpha[lcv] = 3.0 *(((data->Y[j+1] - data->Y[j])/(h[j])) - ((data->Y[j]-data->Y[j-1])/h[j-1]));
+
+  }
 
     
   /* Generate the outside symmetric tri-diagonal matrix from h1 to hn-2  */
@@ -92,7 +100,7 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   double *h;  /* The difference vector */
 
   /* Size of h = N-2 */
-  h = malloc((splines->N)-1) * sizeof(double));
+  h = malloc(((splines->N)-1) * sizeof(double));
 
   if(NULL == h){
     fprintf(stderr, "Failed malloc: cspline_natural\n");
@@ -153,7 +161,7 @@ void cspline_nak( Points* data, CSplines* splines ){
   double *h;  /* The difference vector */
 
   /* Size of h = N-2 */
-  h = malloc((splines->N)-1) * sizeof(double));
+  h = malloc(((splines->N)-1) * sizeof(double));
 
   if(NULL == h){
     fprintf(stderr, "Failed malloc: cspline_natural\n");
@@ -339,18 +347,18 @@ void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N){
  Errors:  none 
 *****************************************************************************************/
 void polySolve(CSplines *splines, double *h, Points *points){
-        /*  aj = yj */
+
+  /*  aj = yj */
        
-        
-        /*  b[j] = yj+1 - yj      cj+1 + 2cj
-                  ----------- -  ---------- hj
-                       hj             3         */
+  /*  b[j] = yj+1 - yj      cj+1 + 2cj
+            ----------- -  ---------- hj
+                 hj             3         */
          
-        /* d[j] = cj+1 - cj
-                -----------
-                     3h        */
+  /* d[j] = cj+1 - cj
+            -----------
+                3h        */
         
-        /* Copy the associated points */
+  /* Copy the associated points */
    
 }
 
