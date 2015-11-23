@@ -176,10 +176,9 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
     
   /* Use the general tri-diagonal solver to find spline data c */
   tridiagonal(p, q, r, c, alpha, N);
- 
     
   /* Copy the solution of the tri-diagonal value c into the spline structure */
- 
+  splines->c = c;
 }
 
 
