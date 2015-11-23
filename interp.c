@@ -30,8 +30,9 @@ void cspline_natural(Points* data, CSplines* splines){
   int lcv;        /* Loop counting variable */
   double *h;      /* The difference vector */
   double *alpha;  /* Alpha vector */
+  double *p, *q, *r;      /* The difference vector */
   
-  /* Size of h = N-2 */
+  /* Size of h = N-1 */
   h = malloc(((splines->N)-1) * sizeof(double));
   alpha = malloc(((splines->N)-1) * sizeof(double));
 
@@ -51,23 +52,32 @@ void cspline_natural(Points* data, CSplines* splines){
                                             -----------      ------------ , j= 1..N-1
                                                 hj            hj -1 */
   for(lcv = 0; lcv < (data->N)-1; lcv++){
-    
-    int j = lcv+1;
-    
-    alpha[lcv] = 3.0 *(((data->Y[j+1] - data->Y[j])/(h[j])) - ((data->Y[j]-data->Y[j-1])/h[j-1]));
+    /* OUT OF BOUNDS EXCEPTION THROWN HERE */
+    alpha[lcv] = 3.0 *(((data->Y[lcv+1] - data->Y[lcv])/(h[lcv])) - ((data->Y[lcv]-data->Y[lcv-1])/h[lcv-1]));
 
   }
 
     
   /* Generate the outside symmetric tri-diagonal matrix from h1 to hn-2  */
+  p = malloc(((splines->N)-1) * sizeof(double));
+  q = malloc(((splines->N)-1) * sizeof(double));
+  r = malloc(((splines->N)-1) * sizeof(double));
   
-    
+  memcpy(p, h, ((splines->N)-1) * sizeof(double));
+  memcpy(r, h, ((splines->N)-1) * sizeof(double));
+
   /* Generate the center diagonal of the symmetric tri-diagonal matrix 
         2(h0+h1)       0 to n-2 inclusive                                 */
- 
+  for(lcv = 0; lcv < (splines->N)-2; lcv++){
+    q[lcv] = 2.0 * (h[lcv] + h[lcv+1]);
+  }
     
   /* Use the general tri-diagonal solver to find spline value c */
+  /*tridiagonal(p, q, r, );
  
+        double* x - resulting solution vector, x returned, the logical "c"
+        double *B - pointer to value matrix - alpha
+        int N     - Number of elements*/
     
   /* Initial "c" condition, zero curvature at the end points */
  
@@ -76,7 +86,7 @@ void cspline_natural(Points* data, CSplines* splines){
  
     
   /* Solve for A, B, and D. */
- 
+  /* polySolve(splines, h, data); */
 }
 
 
@@ -99,7 +109,7 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   int lcv;  /* Loop counting variable */
   double *h;  /* The difference vector */
 
-  /* Size of h = N-2 */
+  /* Size of h = N-1 */
   h = malloc(((splines->N)-1) * sizeof(double));
 
   if(NULL == h){
@@ -160,7 +170,7 @@ void cspline_nak( Points* data, CSplines* splines ){
 	int lcv;  /* Loop counting variable */
   double *h;  /* The difference vector */
 
-  /* Size of h = N-2 */
+  /* Size of h = N-1 */
   h = malloc(((splines->N)-1) * sizeof(double));
 
   if(NULL == h){
@@ -347,16 +357,25 @@ void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N){
  Errors:  none 
 *****************************************************************************************/
 void polySolve(CSplines *splines, double *h, Points *points){
+  int lcv; /* Loop counting variable */
 
-  /*  aj = yj */
+  /* NEED TO INSTANTIATE A B D */
+
+  for(lcv = 0; lcv < (splines->N)-1){
+    /*  aj = yj */
+    A[lcv] = points->Y[lcv];
        
-  /*  b[j] = yj+1 - yj      cj+1 + 2cj
+    /*  b[j] = yj+1 - yj      cj+1 + 2cj
             ----------- -  ---------- hj
                  hj             3         */
-         
-  /* d[j] = cj+1 - cj
+    B[lcv] = ((points->Y[lcv+1] - points[lcv])/h[lcv]) - ((c[lcv+1] + (2*c[lcv])) * h[lcv] / 3.0);
+
+    /* d[j] = cj+1 - cj
             -----------
-                3h        */
+                3hj        */
+    D[lcv] = (c[lcv+1] - c[lcv]) / (3.0 * h[lcv]);
+  }
+    
         
   /* Copy the associated points */
    
