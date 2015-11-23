@@ -33,8 +33,8 @@ void cspline_natural(Points* data, CSplines* splines){
   double *p, *q, *r;      /* The difference vector */
   
   /* Size of h = N-1 */
-  h = malloc(((splines->N)-1) * sizeof(double));
-  alpha = malloc(((splines->N)-1) * sizeof(double));
+  h = malloc(((splines->N)) * sizeof(double));
+  alpha = malloc(((splines->N)) * sizeof(double));
 
   if(NULL == h || NULL == alpha){
     fprintf(stderr, "Failed malloc: cspline_natural\n");
@@ -62,6 +62,11 @@ void cspline_natural(Points* data, CSplines* splines){
   p = malloc(((splines->N)-1) * sizeof(double));
   q = malloc(((splines->N)-1) * sizeof(double));
   r = malloc(((splines->N)-1) * sizeof(double));
+
+  if(NULL == p || NULL == q || NULL == r){
+    fprintf(stderr, "Failed malloc: cspline_natural\n");
+    return;
+  }
   
   memcpy(p, h, ((splines->N)-1) * sizeof(double));
   memcpy(r, h, ((splines->N)-1) * sizeof(double));
@@ -107,18 +112,29 @@ void cspline_natural(Points* data, CSplines* splines){
 *****************************************************************************************/
 void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   int lcv;  /* Loop counting variable */
-  double *h;  /* The difference vector */
+  int N;
+  double *h, *alpha;  /* The difference and alpha vector */
+  double *p, *q, *r, *c;  /* tridiagonal vectors */
 
-  /* Size of h = N-1 */
-  h = malloc(((splines->N)-1) * sizeof(double));
 
-  if(NULL == h){
-    fprintf(stderr, "Failed malloc: cspline_natural\n");
+  N = splines->N;
+
+  /* Size of h = size of splines */
+  h = malloc(N * sizeof(double));
+  p = malloc(N * sizeof(double));
+  q = malloc((N+1) * sizeof(double));
+  r = malloc(N * sizeof(double));
+  c = malloc(N * sizeof(double));
+  
+  alpha = malloc((data->N) * sizeof(double));
+
+  if(NULL == h || NULL == alpha || NULL == p || NULL == q || NULL == r || NULL == c){
+    fprintf(stderr, "Failed malloc: cspline_clamped\n");
     return;
   }
 
   /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
-  for(lcv = 0; lcv < (data->N)-1; lcv++){
+  for(lcv = 0; lcv < N-1; lcv++){
 
     h[lcv] = data->X[lcv+1] - data->X[lcv];
 
@@ -126,31 +142,43 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
  
     
 	/* Find the alpha vector 
-        alpha0 = 3(y1 - y0) - y0' 
-                 -------------
-                     h0                 */
+        alpha0 = 3((y1 - y0) - y0') 
+                   --------
+                        h0                 */
+
+  alpha[0] = 3.0 * (((data->Y[1] - data->Y[0]) / h[0]) - data->y0);
 
     
     /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
                                               -----------      ------------ , j= 1..N-1
                                                  hj            hj -1 */
-  
+  for(lcv = 1; lcv < N; lcv++){
+    alpha[lcv] = 3.0 * (((data->Y[lcv+1] - data->Y[lcv]) / h[lcv]) + ((data->Y[lcv] - data->Y[lcv-1])/h[lcv-1]));
+  }
     
     /*  alphan = 3(yn' - (yn - yn-1)  )
                           ----------
                               hn-1             */
-
+  alpha[N] = 3.0 * (data->yn - (data->Y[N] - data->Y[(N-1])/h[N-1]); 
 
     /* Generate the outside symmetric tri-diagonal matrix */
+  memcpy(p, h, ((splines->N)-1) * sizeof(double));
+  memcpy(r, h, ((splines->N)-1) * sizeof(double));
+   
+  /* Generate the center diagonal of the symmetric tri-diagonal matrix */
+  q[0] = 2.0 * h[0];
 
-    
-    /* Generate the center diagonal of the symmetric tri-diagonal matrix */
+  for(lcv = 1; lcv < N; lcv++){
+    q[lcv] = 2.0 * (h[lcv-1] + h[lcv]);
+  }
 
+  q[N-1] = 2 * h[N-1];
     
-    /* Use the general tri-diagonal solver to find spline data c */
+  /* Use the general tri-diagonal solver to find spline data c */
+  tridiagonal(p, q, r, c, alpha, N);
  
     
-    /* Copy the solution of the tri-diagonal value c into the spline structure */
+  /* Copy the solution of the tri-diagonal value c into the spline structure */
  
 }
 
@@ -170,8 +198,8 @@ void cspline_nak( Points* data, CSplines* splines ){
 	int lcv;  /* Loop counting variable */
   double *h;  /* The difference vector */
 
-  /* Size of h = N-1 */
-  h = malloc(((splines->N)-1) * sizeof(double));
+  /* Size of h = size of splines */
+  h = malloc((splines->N) * sizeof(double));
 
   if(NULL == h){
     fprintf(stderr, "Failed malloc: cspline_natural\n");
