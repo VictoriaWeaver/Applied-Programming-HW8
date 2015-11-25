@@ -117,20 +117,13 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   double *p, *q, *r, *c;  /* tridiagonal vectors */
 
 
-  N = (splines->N)-1;
+  N = (splines->N);
 
   /* Size of h = size of splines */
-  h = malloc(N * sizeof(double));
-
-  p = malloc(N * sizeof(double));
-  q = malloc((N+1) * sizeof(double));
-  r = malloc(N * sizeof(double));
+  h = malloc((N-1) * sizeof(double));
   
-  c = malloc((N+1) * sizeof(double));
-  
-  alpha = malloc((N+1) * sizeof(double));
 
-  if(NULL == h || NULL == alpha || NULL == p || NULL == q || NULL == r || NULL == c){
+  if(NULL == h){
     fprintf(stderr, "Failed malloc: cspline_clamped\n");
     return;
   }
@@ -146,6 +139,12 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
         alpha0 = 3((y1 - y0) - y0') 
                    --------
                         h0                 */
+  alpha = malloc((N+1) * sizeof(double));
+
+  if(NULL == alpha){
+    fprintf(stderr, "Failed malloc: cspline_clamped\n");
+    return;
+  }     
 
   alpha[0] = 3.0 * (((data->Y[1] - data->Y[0]) / h[0]) - data->y0);
 
@@ -160,11 +159,21 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   /*  alphan = 3(yn' - (yn - yn-1)  )
                          ----------
                            hn-1             */
-  alpha[N] = 3.0 * (data->yn - (data->Y[N] - data->Y[(N-1])/h[N-1]); 
+  alpha[N] = 3.0 * (data->yn - (data->Y[N] - data->Y[(N-1])/h[N-1]);
+
+  p = malloc(N * sizeof(double));
+  q = malloc((N+1) * sizeof(double));
+  r = malloc(N * sizeof(double));
+  c = malloc((N+1) * sizeof(double));
+
+  if(NULL == p || NULL == q || NULL == r || NULL == c){
+    fprintf(stderr, "Failed malloc: cspline_clamped\n");
+    return;
+  }
 
   /* Generate the outside symmetric tri-diagonal matrix */
-  memcpy(p, h, ((splines->N)-1) * sizeof(double));
-  memcpy(r, h, ((splines->N)-1) * sizeof(double));
+  memcpy(p, h, (N * sizeof(double));
+  memcpy(r, h, (N * sizeof(double));
    
   /* Generate the center diagonal of the symmetric tri-diagonal matrix */
   q[0] = 2.0 * h[0];
