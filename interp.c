@@ -201,6 +201,10 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
     
   /* Copy the solution of the tri-diagonal value c into the spline structure */
   memcpy(splines->c, c, ((N+1) * sizeof(double)));
+
+  /* Solve for A, B, and D. */
+  polySolve(splines, h, data);
+
 }
 
 
