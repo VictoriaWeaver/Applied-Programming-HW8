@@ -60,7 +60,7 @@ void cspline_natural(Points* data, CSplines* splines){
     
   /* Generate the outside symmetric tri-diagonal matrix from h1 to hn-2  */
   p = malloc(((splines->N)-1) * sizeof(double));
-  q = malloc(((splines->N)-1) * sizeof(double));
+  q = malloc(((splines->N)) * sizeof(double));
   r = malloc(((splines->N)-1) * sizeof(double));
 
   if(NULL == p || NULL == q || NULL == r){
@@ -112,21 +112,23 @@ void cspline_natural(Points* data, CSplines* splines){
 *****************************************************************************************/
 void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   int lcv;  /* Loop counting variable */
-  int N;
+  int N;    /* The number of data points */
   double *h, *alpha;  /* The difference and alpha vector */
   double *p, *q, *r, *c;  /* tridiagonal vectors */
 
 
-  N = splines->N;
+  N = (splines->N)-1;
 
   /* Size of h = size of splines */
   h = malloc(N * sizeof(double));
+
   p = malloc(N * sizeof(double));
   q = malloc((N+1) * sizeof(double));
   r = malloc(N * sizeof(double));
-  c = malloc(N * sizeof(double));
   
-  alpha = malloc((data->N) * sizeof(double));
+  c = malloc((N+1) * sizeof(double));
+  
+  alpha = malloc((N+1) * sizeof(double));
 
   if(NULL == h || NULL == alpha || NULL == p || NULL == q || NULL == r || NULL == c){
     fprintf(stderr, "Failed malloc: cspline_clamped\n");
@@ -134,12 +136,11 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   }
 
   /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
-  for(lcv = 0; lcv < N-1; lcv++){
+  for(lcv = 0; lcv < N; lcv++){
 
     h[lcv] = data->X[lcv+1] - data->X[lcv];
 
   }
- 
     
 	/* Find the alpha vector 
         alpha0 = 3((y1 - y0) - y0') 
@@ -149,19 +150,19 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   alpha[0] = 3.0 * (((data->Y[1] - data->Y[0]) / h[0]) - data->y0);
 
     
-    /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
+  /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
                                               -----------      ------------ , j= 1..N-1
                                                  hj            hj -1 */
   for(lcv = 1; lcv < N; lcv++){
     alpha[lcv] = 3.0 * (((data->Y[lcv+1] - data->Y[lcv]) / h[lcv]) + ((data->Y[lcv] - data->Y[lcv-1])/h[lcv-1]));
   }
     
-    /*  alphan = 3(yn' - (yn - yn-1)  )
-                          ----------
-                              hn-1             */
+  /*  alphan = 3(yn' - (yn - yn-1)  )
+                         ----------
+                           hn-1             */
   alpha[N] = 3.0 * (data->yn - (data->Y[N] - data->Y[(N-1])/h[N-1]); 
 
-    /* Generate the outside symmetric tri-diagonal matrix */
+  /* Generate the outside symmetric tri-diagonal matrix */
   memcpy(p, h, ((splines->N)-1) * sizeof(double));
   memcpy(r, h, ((splines->N)-1) * sizeof(double));
    
@@ -178,7 +179,7 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   tridiagonal(p, q, r, c, alpha, N);
     
   /* Copy the solution of the tri-diagonal value c into the spline structure */
-  splines->c = c;
+  memcpy(splines->c, c, ((N+1) * sizeof(double)));
 }
 
 
@@ -198,7 +199,7 @@ void cspline_nak( Points* data, CSplines* splines ){
   double *h;  /* The difference vector */
 
   /* Size of h = size of splines */
-  h = malloc((splines->N) * sizeof(double));
+  h = malloc(? * sizeof(double));
 
   if(NULL == h){
     fprintf(stderr, "Failed malloc: cspline_natural\n");
@@ -272,20 +273,14 @@ double cspline_eval( double x, CSplines* splines){
     return NAN;
   }
 
-  for(lcv = 0; lcv < (splines->N)-1; lcv++){
+  for(lcv = 0; lcv < (splines->N); lcv++){
     
     if(x >= splines->X[lcv] && x < splines->X[lcv+1]){
       break;
     }
 
     /* Note does not check for the last point, so the last spline will never be evaluated: NEEDS FIX */
-    if(lcv == (splines->N)-2){
-      /* SOME CHECK FOR THE LAST SPLINE 
-        if(){
-          lcv++;
-          break;
-        }
-      */
+    if(lcv == (splines->N)-1){
       fprintf(stderr, "ERROR: Maximum Bound\n");
       return NAN;
     }
@@ -450,9 +445,9 @@ void s_alloc(CSplines *splines, int N){
   /* Allocate space for the coefficients and the partition */
   splines->a = malloc(N * sizeof(double));
   splines->b = malloc(N * sizeof(double));
-  splines->c = malloc(N * sizeof(double));
+  splines->c = malloc((N+1) * sizeof(double));
   splines->d = malloc(N * sizeof(double));
-  splines->X = malloc(N * sizeof(double));  /* Temporary until actual value is determined */
+  splines->X = malloc((N+1) * sizeof(double));  /* Temporary until actual value is determined */
 
   /* Check for successful allocation */
    if((NULL == splines->a) || (NULL == splines->b) || (NULL == splines->c) || (NULL == splines->d) || (NULL == splines->X)){
@@ -497,7 +492,7 @@ void s_free(CSplines *splines){
  Allocates space to hold the points 
  
  Where: Points *points - Pointer to Points Structure to allocate    
-        int N          - The number of splines required 
+        int N          - The number of points required 
  Returns: nothing
  Errors:  prints an error message and exits 
 *****************************************************************************************/
