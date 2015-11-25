@@ -221,59 +221,90 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
 ***************************************************************************************/
 void cspline_nak( Points* data, CSplines* splines ){
 	int lcv;  /* Loop counting variable */
-  double *h;  /* The difference vector */
+  double *h, *alpha;  /* The difference and alpha vector */
+  double *p, *q, *r, *c;  /* tridiagonal vectors */
+  int N;      /* # of splines */
+
+  N = splines->N;
 
   /* Size of h = size of splines */
-  h = malloc(? * sizeof(double));
+  h = malloc(N * sizeof(double));
 
   if(NULL == h){
-    fprintf(stderr, "Failed malloc: cspline_natural\n");
+    fprintf(stderr, "Failed malloc: cspline_nak\n");
     return;
   }
 
   /* Generate the h (difference) vector: notes: hj = xj+1  -  xj*/
-  for(lcv = 0; lcv < (data->N)-1; lcv++){
+  for(lcv = 0; lcv < N; lcv++){
 
     h[lcv] = data->X[lcv+1] - data->X[lcv];
 
   }
 
 	
-   /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
+  /* Find the alpha vector: notes: alphaj = 3((yj+1 - yj)  -  (yj - yj-1)) 
                                               -----------      ------------ , j= 1..N-1
                                                  hj            hj -1 */
- 
+  alpha = malloc((N-1) * sizeof(double));
+
+  if(NULL == alpha){
+    fprintf(stderr, "Failed malloc: cspline_nak\n");
+    return;
+  }
+
+  for(lcv = 0; lcv < N-1; lcv++){
+    alpha[lcv] = 3.0 * (((data->Y[lcv+1] - data->Y[lcv]) / h[lcv]) + ((data->Y[lcv] - data->Y[lcv-1])/h[lcv-1]));
+  }
     
-    /* Find the tri-diagonal matrix and solve for c */
-    /* Generate the outside symmetric tri-diagonal matrix */
+  /* Find the tri-diagonal matrix and solve for c */
+  /* Generate the outside symmetric tri-diagonal matrix */
+  p = malloc((N-2) * sizeof(double));
+  q = malloc((N-1) * sizeof(double));
+  r = malloc((N-2) * sizeof(double));
+  c = malloc((N-1) * sizeof(double));
+
+  if(NULL == p || NULL == q || NULL == r || NULL == c){
+    fprintf(stderr, "Failed malloc: cspline_nak\n");
+    return;
+  }
   
+  memcpy(&p[1], &h[2], (N-3) * sizeof(double));
+  memcpy(r, &h[1], (N-3) * sizeof(double));
+
+  /* Generate the extra bottom terms for knk 
+         = h2 - hn-1**2/hn-2                 */
+  r[N-3] = h[N-2] - ((h[N-1] * h[N-1]) / h[N-2]);
     
-    /* Generate the extra bottom terms for knk 
-           = h2 - hn-1**2/hn-2                 */
+  /* Generate the top terms for knk 
+         = h1 - h0**2/h1                  */
+  p[0] = h[1] - ((h[0] * h[0]) / h[1]);
 
     
-    /* Generate the top terms for knk 
-           = h1 - h0**2/h1                  */
-
-    
-    /* Generate the center diagonal of the symmetric tri-diagonal matrix, with extra terms 
-            =3h0 + 2h1 + (h0**2/h1              */
+  /* Generate the center diagonal of the symmetric tri-diagonal matrix, with extra terms 
+          =3h0 + 2h1 + (h0**2/h1                
+           3hn-1 * 2hn-2 * hn-1**2/hn-2         */
   
-    
-    /*       3hn-1 * 2hn-2 * hn-1**2/hn-2         */
- 
-    
-     /* Use the general tri-diagonal solver, find spline value c, results returned in vector c */
+  q[0] = (3.0 * h[0]) + (2.0 * h[1]) + (h[0] * h[0] / h[1]);
 
+  for(lcv = 1; lcv < N-2; lcv++){
+    q[lcv] = 2.0 * (h[lcv] + h[lcv+1]);
+  }
+  
+  q[N-2] = (3.0 * h[N-1]) + (2.0 * h[N-2]) + (h[N-1] * h[N-1] / h[N-2]);    
     
-    /* Set the C vector into the points 
-                  = 1 + h1/h0* c0 - h0/h1 * c1              */
+  /* Use the general tri-diagonal solver, find spline value c, results returned in vector c */
+  tridiagonal(p ,q, r, c, alpha, N-1);
+    
+  /* Set the C vector into the points 
+                = 1 + h1/h0* c0 - h0/h1 * c1              */
  
  
-    /* Copy the solution of the tri-diagonal value c into the spline structure */
+  /* Copy the solution of the tri-diagonal value c into the spline structure */
+  memcpy(splines->c, c, ((N-1) * sizeof(double)));
  
- 
-    /* Solve for A, B, and D. */
+  /* Solve for A, B, and D. */
+  polySolve(splines, h, data);
  
 }
 
