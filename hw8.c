@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
 		if((3 == argc) && ((0 == strcmp(argv[1], "-nak")) ||  (0 == strcmp(argv[1], "-nat")) || (0 == strcmp(argv[1], "-cl")))){
 
 			/* Declare pointer to file object */
-			FILE* inputFile;
+			FILE *inputFile;
 
 			/* Attempt to open the input file */
 			inputFile = fopen(argv[2], "r");
@@ -42,13 +42,27 @@ int main(int argc, char *argv[]){
 				/* Read in the data using dynamic arrays */
 
 
+
 			}
 
 
 		}
 		/* Check for -e use case */
 		else if((4 == argc) && (0 == strcmp(argv[1],"-e"))){
+			/* Declare pointer to file object */
+			FILE *splineFile, *evalFile;
 
+			/* Attempt to open the files */
+			splineFile = fopen(argv[2], "r");
+			evalFile = fopen(argv[2], "r");
+
+			/* Check if opened properly */
+			if((NULL == splineFile) || (NULL == evalFile)){
+
+				fprintf(stdout, "\nFiles were not opened properly!\n");
+				return 2;
+
+			}
 		}
 		else{
 			/* Print usage message */
