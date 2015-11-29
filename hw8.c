@@ -39,8 +39,36 @@ int main(int argc, char *argv[]){
 				CSplines splines;		/* Splines */
 				double xpoint, ypoint;	/* Data read in */
 
+				
+				/* Create a Dynamic Array to read in the X data and one for the Y data */
+				DArray *XArray;
+				DArray *YArray;
+
+
+				/* Initial Size of 100 */	
+				CreateDArray(XArray, 100);
+
+				/* Initial Size of 100 */	
+				CreateDArray(YArray, 100);
+
+
 				/* Read in the data using dynamic arrays */
 
+				/* Scan the first two values for deriv at A and B */
+				fscanf(inputFile, "%lf %lf", &dA, &dB);
+
+				while(fscanf(inputFile, "%lf %lf", &xpoint, &ypoint)!=EOF){
+
+					PushToDArray(&data, &xpoint, &ypoint);
+
+				}
+
+
+
+
+				/* Free the DArray */
+				DestroyDArray(XArray);
+				DestroyDArray(YArray);
 
 
 			}
@@ -64,6 +92,23 @@ int main(int argc, char *argv[]){
 
 			}
 			else{
+				/* Declare variables to be read from sparameters file */
+				double X0, X1, a, b, c, d;
+
+				/* Create a Dynamic Array to read in the data */
+				DArray *DArrayPtr;
+
+				/* Initial Size of 100 */	
+				CreateDArray(DArrayPtr, 100);
+
+
+
+				/* Prints the splines to standard out 
+            	of the form:  X0 X1 d c b a */
+
+
+				/* Free the DArray */
+				DestroyDArray(DArrayPtr);
 
 			}
 
