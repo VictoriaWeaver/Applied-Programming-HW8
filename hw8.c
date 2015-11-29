@@ -10,7 +10,7 @@
 #include <string.h>
 
 #include "interp.h"
-#include "Dynamic.h"
+#include "DynamicArrays.h"
 
 
 int main(int argc, char *argv[]){
@@ -29,14 +29,14 @@ int main(int argc, char *argv[]){
 			/* Check if opened properly */
 			if(NULL == inputFile){
 
-				fprintf(stdout, "\nFile was not opened properly!\n");
+				fprintf(stdout, "File was not opened properly!\n");
 				return 2;
 
 			}
 			else{
 				double dA, dB;			/* The first line in the file should be the derivatives */
 				Points data;			/* Data points */
-				Csplines splines;		/* Splines */
+				CSplines splines;		/* Splines */
 				double xpoint, ypoint;	/* Data read in */
 
 				/* Read in the data using dynamic arrays */
@@ -59,10 +59,14 @@ int main(int argc, char *argv[]){
 			/* Check if opened properly */
 			if((NULL == splineFile) || (NULL == evalFile)){
 
-				fprintf(stdout, "\nFiles were not opened properly!\n");
+				fprintf(stdout, "Files were not opened properly!\n");
 				return 2;
 
 			}
+			else{
+
+			}
+
 		}
 		else{
 			/* Print usage message */
