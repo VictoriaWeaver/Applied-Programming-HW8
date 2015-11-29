@@ -15,10 +15,10 @@
 /**************************  modify as needed *************************/
 /** Data typemark to store payload: Modify according to application  ***/
 /** In this case the payload consists of a sequence number and a word **/
-typedef struct {
-   int Num;           /* Sequence number */
-   char String[256];  /* word, (less than 255 chars -not checked!) */
-  } Data;
+/*typedef struct {
+   int Num;            Sequence number 
+   char String[256];   word, (less than 255 chars -not checked!) 
+  } Data;*/
 /************ Nothing else in the module needs to be modified **********/
 
 /* Growth Policy : Constant Size */
@@ -33,7 +33,7 @@ typedef struct {
 typedef struct DArray {
    unsigned int Capacity;    /* Max Number of elements array can hold */
    unsigned int EntriesUsed; /* Number of array elements "used"       */
-   Data *Payload;   /* Pointer to array that actually holds the data  */
+   double *Payload;   /* Pointer to array that actually holds the data  */
   } DArray;
 
 /**************************************************************************
@@ -48,7 +48,7 @@ void CreateDArray( DArray *DArrayPtr, unsigned int InitialSize );
 *   If full, realocates memory space according to growth policy
 * postcond: returns the index to the last element added 
 **************************************************************************/
-unsigned int PushToDArray( DArray *DArrayPtr, Data *PayloadPtr );
+unsigned int PushToDArray( DArray *DArrayPtr, double *PayloadPtr );
 
 /**************************************************************************
 * DestroyDArray

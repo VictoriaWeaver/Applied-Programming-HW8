@@ -11,6 +11,7 @@
 /* Include Standard Libraries */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "DynamicArrays.h"
 
@@ -29,7 +30,7 @@ void CreateDArray( DArray *DArrayPtr, unsigned int InitialSize ){
 		DArrayPtr->Payload = NULL;
 	}
 	else{
-		DArrayPtr->Payload = (Data*) malloc(DArrayPtr->Capacity * sizeof(Data));
+		DArrayPtr->Payload = (double*) malloc(DArrayPtr->Capacity * sizeof(double));
 
 		/* Check if malloc was successful */
 		if(DArrayPtr->Payload == NULL){
@@ -46,13 +47,13 @@ void CreateDArray( DArray *DArrayPtr, unsigned int InitialSize ){
 *   If full, realocates memory space according to growth policy
 * postcond: returns the index to the last element added 
 **************************************************************************/
-unsigned int PushToDArray( DArray *DArrayPtr, Data *PayloadPtr ){
+unsigned int PushToDArray( DArray *DArrayPtr, double *PayloadPtr ){
 	/* If the array is full, increase the size */
 	if(DArrayPtr->EntriesUsed == DArrayPtr->Capacity){
 		DArrayPtr->Capacity += GROWTH_AMOUNT;
 
 		/* Reallocate heap memory to reflect the new size of the dynamic array */
-		DArrayPtr->Payload = realloc(DArrayPtr->Payload, DArrayPtr->Capacity * sizeof(Data));
+		DArrayPtr->Payload = realloc(DArrayPtr->Payload, DArrayPtr->Capacity * sizeof(double));
 	
 		/* Check if realloc was successful */
 		if(DArrayPtr->Payload == NULL){
@@ -61,7 +62,7 @@ unsigned int PushToDArray( DArray *DArrayPtr, Data *PayloadPtr ){
 		}
 	}
 
-	memcpy(&(DArrayPtr->Payload[DArrayPtr->EntriesUsed]), PayloadPtr, sizeof(Data));
+	memcpy(&(DArrayPtr->Payload[DArrayPtr->EntriesUsed]), PayloadPtr, sizeof(double));
 
 	DArrayPtr->EntriesUsed++;
 
