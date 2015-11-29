@@ -35,14 +35,17 @@ int main(int argc, char *argv[]){
 			}
 			else{
 				double dA, dB;			/* The first line in the file should be the derivatives */
-				Points data;			/* Data points */
-				CSplines splines;		/* Splines */
+				Points *data;			/* Data points */
+				CSplines *splines;		/* Splines */
 				double xpoint, ypoint;	/* Data read in */
 
 				
 				/* Create a Dynamic Array to read in the X data and one for the Y data */
 				DArray *XArray;
 				DArray *YArray;
+
+				XArray = NULL;
+				YArray = NULL;
 
 
 				/* Initial Size of 100 */	
@@ -59,11 +62,44 @@ int main(int argc, char *argv[]){
 
 				while(fscanf(inputFile, "%lf %lf", &xpoint, &ypoint)!=EOF){
 
-					PushToDArray(&data, &xpoint, &ypoint);
+					PushToDArray(XArray, &xpoint);
+					PushToDArray(YArray, &ypoint);
 
 				}
 
+				data = NULL;
+				splines = NULL;
 
+
+				/* Create the points and splines */
+				p_alloc(data, XArray->EntriesUsed);
+				s_alloc(splines, (XArray->EntriesUsed-1));
+
+				memcpy(data->X, XArray->Payload, (data->N)*sizeof(double));
+				memcpy(data->Y, YArray->Payload, (data->N)*sizeof(double));
+
+				data->y0 = dA;
+				data->yn = dB;
+
+
+
+				/* not-a-knot splines method */
+				if(0 == strcmp(argv[1], "-nak")){
+					cspline_nak(data, splines);
+					printSplines(splines);
+				}
+
+				/* natural splines method */
+				if(0 == strcmp(argv[1],"-nat")){
+					cspline_natural(data, splines);
+					printSplines(splines);
+				}
+
+				/* clamped splines method */
+				if(0 == strcmp(argv[1],"-cl")){
+					cspline_clamped(data, dA, dB, splines); 
+					printSplines(splines);
+				}
 
 
 				/* Free the DArray */
@@ -97,6 +133,8 @@ int main(int argc, char *argv[]){
 
 				/* Create a Dynamic Array to read in the data */
 				DArray *DArrayPtr;
+
+				DArrayPtr = NULL;
 
 				/* Initial Size of 100 */	
 				CreateDArray(DArrayPtr, 100);
