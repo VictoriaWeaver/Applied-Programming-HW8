@@ -99,14 +99,16 @@ void cspline_natural(Points* data, CSplines* splines){
   /* Use the general tri-diagonal solver to find spline value c */
   tridiagonal(p, q, r, c, alpha, N-1);
    
-  /* Initial "c" condition, zero curvature at the end points */
-  c[0] = 0.0;
-  c[N-2] = 0.0;
 
+  
     
   /* Copy the solution of the tri-diagonal value c into the spline structure */
-  memcpy(splines->c, c, (N-1)*sizeof(double));
-    
+  memcpy(&(splines->c[1]), c, (N-2)*sizeof(double));
+
+  /* Initial "c" condition, zero curvature at the end points */
+  splines->c[0] = 0.0;
+  splines->c[N-2] = 0.0;
+
   /* Solve for A, B, and D. */
   polySolve(splines, h, data); 
 
@@ -412,7 +414,7 @@ void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N){
   x[N-1] = z[N-1] / d[N-1];
   
   for (lcv = N-2; lcv >= 0; lcv--){
-    x[lcv] = (z[lcv] - x[lcv+1]) / d[lcv];
+    x[lcv] = (z[lcv] - (u[lcv] * x[lcv+1])) / d[lcv];
   }
 
 
