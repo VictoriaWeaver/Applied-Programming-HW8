@@ -77,6 +77,8 @@ int main(int argc, char *argv[]){
 				data.y0 = dA;
 				data.yn = dB;
 
+				memcpy(splines.X, XArray.Payload, (data.N)*sizeof(double));
+
 
 				/* not-a-knot splines method */
 				if(0 == strcmp(argv[1], "-nak")){
@@ -105,6 +107,10 @@ int main(int argc, char *argv[]){
 					printSplines(&splines);
 				}
 
+				/* Free the data and spline structures */
+				s_free(&splines);
+				p_free(&data);
+
 
 				/* Free the DArray */
 				DestroyDArray(&XArray);
@@ -113,6 +119,7 @@ int main(int argc, char *argv[]){
 
 			}
 
+			fclose(inputFile);
 
 		}
 		/* Check for -e use case */
@@ -151,8 +158,12 @@ int main(int argc, char *argv[]){
 
 				/* Free the DArray */
 				DestroyDArray(DArrayPtr);
+ 
 
 			}
+
+			fclose(splineFile);
+			fclose(evalFile);
 
 		}
 		else{

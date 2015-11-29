@@ -98,10 +98,7 @@ void cspline_natural(Points* data, CSplines* splines){
 
   /* Use the general tri-diagonal solver to find spline value c */
   tridiagonal(p, q, r, c, alpha, N-1);
-   
-
-  
-    
+       
   /* Copy the solution of the tri-diagonal value c into the spline structure */
   memcpy(&(splines->c[1]), c, (N-2)*sizeof(double));
 
@@ -110,7 +107,15 @@ void cspline_natural(Points* data, CSplines* splines){
   splines->c[N-2] = 0.0;
 
   /* Solve for A, B, and D. */
-  polySolve(splines, h, data); 
+  polySolve(splines, h, data);
+
+  /* Free all the temporary vectors */
+  free(h);
+  free(alpha);
+  free(p);
+  free(q);
+  free(r);
+  free(c);
 
 }
 
@@ -213,6 +218,14 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   /* Solve for A, B, and D. */
   polySolve(splines, h, data);
 
+  /* Free all the temporary vectors */
+  free(h);
+  free(alpha);
+  free(p);
+  free(q);
+  free(r);
+  free(c);
+
 }
 
 
@@ -313,6 +326,14 @@ void cspline_nak( Points* data, CSplines* splines ){
  
   /* Solve for A, B, and D. */
   polySolve(splines, h, data);
+
+  /* Free all the temporary vectors */
+  free(h);
+  free(alpha);
+  free(p);
+  free(q);
+  free(r);
+  free(c);
  
 }
 
@@ -485,17 +506,8 @@ void printSplines(CSplines *splines){
     int lcv;  /* Loop counting variable */
 
     for(lcv = 0; lcv < (splines->N); lcv++){
-
-      /* Temporary fix for the last point where there is no X1 value (out of bounds) */
-      if(lcv == splines->N - 1){
-        fprintf(stdout, "%g X1 %g %g %g %g\n", splines->X[lcv], splines->d[lcv], 
-                splines->c[lcv], splines->b[lcv], splines->a[lcv]);
-      }
-      else{
-        fprintf(stdout, "%g %g %g %g %g %g\n", splines->X[lcv], splines->X[lcv+1],
+      fprintf(stdout, "%f %f %f %f %f %f\n", splines->X[lcv], splines->X[lcv+1],  
                 splines->d[lcv], splines->c[lcv], splines->b[lcv], splines->a[lcv]);
-      }
-
     }
 }
 
