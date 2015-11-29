@@ -15,10 +15,11 @@
 
 int main(int argc, char *argv[]){
 	/* Check if proper amount of commandline arguments */
-	if(1 >= argc){
+	if(1 <= argc){
 
 		/* Check for first 3 usage cases */
 		if((3 == argc) && ((0 == strcmp(argv[1], "-nak")) ||  (0 == strcmp(argv[1], "-nat")) || (0 == strcmp(argv[1], "-cl")))){
+
 
 			/* Declare pointer to file object */
 			FILE *inputFile;
@@ -35,24 +36,21 @@ int main(int argc, char *argv[]){
 			}
 			else{
 				double dA, dB;			/* The first line in the file should be the derivatives */
-				Points *data;			/* Data points */
-				CSplines *splines;		/* Splines */
+				Points data;			/* Data points */
+				CSplines splines;		/* Splines */
 				double xpoint, ypoint;	/* Data read in */
 
 				
 				/* Create a Dynamic Array to read in the X data and one for the Y data */
-				DArray *XArray;
-				DArray *YArray;
-
-				XArray = NULL;
-				YArray = NULL;
+				DArray XArray;
+				DArray YArray;
 
 
 				/* Initial Size of 100 */	
-				CreateDArray(XArray, 100);
+				CreateDArray(&XArray, 100);
 
 				/* Initial Size of 100 */	
-				CreateDArray(YArray, 100);
+				CreateDArray(&YArray, 100);
 
 
 				/* Read in the data using dynamic arrays */
@@ -62,49 +60,55 @@ int main(int argc, char *argv[]){
 
 				while(fscanf(inputFile, "%lf %lf", &xpoint, &ypoint)!=EOF){
 
-					PushToDArray(XArray, &xpoint);
-					PushToDArray(YArray, &ypoint);
+					PushToDArray(&XArray, &xpoint);
+					PushToDArray(&YArray, &ypoint);
 
 				}
 
-				data = NULL;
-				splines = NULL;
-
-
+			
 				/* Create the points and splines */
-				p_alloc(data, XArray->EntriesUsed);
-				s_alloc(splines, (XArray->EntriesUsed-1));
+				p_alloc(&data, XArray.EntriesUsed);
+				s_alloc(&splines, (XArray.EntriesUsed-1));
 
-				memcpy(data->X, XArray->Payload, (data->N)*sizeof(double));
-				memcpy(data->Y, YArray->Payload, (data->N)*sizeof(double));
+				memcpy(data.X, XArray.Payload, (data.N)*sizeof(double));
+				memcpy(data.Y, YArray.Payload, (data.N)*sizeof(double));
 
-				data->y0 = dA;
-				data->yn = dB;
+				data.y0 = dA;
+				data.yn = dB;
 
 
 
 				/* not-a-knot splines method */
 				if(0 == strcmp(argv[1], "-nak")){
-					cspline_nak(data, splines);
-					printSplines(splines);
+
+					fprintf(stdout, "not-a-knot method: \n");
+
+					cspline_nak(&data, &splines);
+					printSplines(&splines);
 				}
 
 				/* natural splines method */
 				if(0 == strcmp(argv[1],"-nat")){
-					cspline_natural(data, splines);
-					printSplines(splines);
+
+					fprintf(stdout, "natural method: \n");
+
+					cspline_natural(&data, &splines);
+					printSplines(&splines);
 				}
 
 				/* clamped splines method */
 				if(0 == strcmp(argv[1],"-cl")){
-					cspline_clamped(data, dA, dB, splines); 
-					printSplines(splines);
+
+					fprintf(stdout, "clamped method: \n");
+
+					cspline_clamped(&data, dA, dB, &splines); 
+					printSplines(&splines);
 				}
 
 
 				/* Free the DArray */
-				DestroyDArray(XArray);
-				DestroyDArray(YArray);
+				DestroyDArray(&XArray);
+				DestroyDArray(&YArray);
 
 
 			}
