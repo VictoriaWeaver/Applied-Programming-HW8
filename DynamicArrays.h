@@ -57,4 +57,7 @@ unsigned int PushToDArray( DArray *DArrayPtr, double *PayloadPtr );
 **************************************************************************/
 void DestroyDArray(DArray *DArrayPtr);
 
+
+void PrintArray(DArray *DArrayPtr);
+
 #endif /* _DYNAMIC_ARRAYS_H_ */

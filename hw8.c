@@ -45,6 +45,7 @@ int main(int argc, char *argv[]){
 				DArray XArray;
 				DArray YArray;
 
+				int lcv;
 
 				/* Initial Size of 100 */	
 				CreateDArray(&XArray, 100);
@@ -65,7 +66,7 @@ int main(int argc, char *argv[]){
 
 				}
 
-			
+
 				/* Create the points and splines */
 				p_alloc(&data, XArray.EntriesUsed);
 				s_alloc(&splines, (XArray.EntriesUsed-1));
@@ -75,7 +76,6 @@ int main(int argc, char *argv[]){
 
 				data.y0 = dA;
 				data.yn = dB;
-
 
 
 				/* not-a-knot splines method */
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]){
 
 
 
-				/* Prints the splines to standard out 
+				/* the splines to standard out 
             	of the form:  X0 X1 d c b a */
 
 

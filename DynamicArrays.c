@@ -84,7 +84,15 @@ void DestroyDArray( DArray *DArrayPtr ){
 	DArrayPtr->Payload = NULL;
 }
 
+void PrintArray(DArray *DArrayPtr){
+	int lcv;
 
+	for(lcv = 0; lcv < DArrayPtr->EntriesUsed; lcv++){
+		fprintf(stdout, " %f \n", DArrayPtr->Payload[lcv]);
+	}
+
+
+}
 
 
 
