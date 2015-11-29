@@ -20,6 +20,31 @@ int main(int argc, char *argv[]){
 		/* Check for first 3 usage cases */
 		if((3 == argc) && ((0 == strcmp(argv[1], "-nak")) ||  (0 == strcmp(argv[1], "-nat")) || (0 == strcmp(argv[1], "-cl")))){
 
+			/* Declare pointer to file object */
+			FILE* inputFile;
+
+			/* Attempt to open the input file */
+			inputFile = fopen(argv[2], "r");
+
+			/* Check if opened properly */
+			if(NULL == inputFile){
+
+				fprintf(stdout, "\nFile was not opened properly!\n");
+				return 2;
+
+			}
+			else{
+				double dA, dB;			/* The first line in the file should be the derivatives */
+				Points data;			/* Data points */
+				Csplines splines;		/* Splines */
+				double xpoint, ypoint;	/* Data read in */
+
+				/* Read in the data using dynamic arrays */
+
+
+			}
+
+
 		}
 		/* Check for -e use case */
 		else if((4 == argc) && (0 == strcmp(argv[1],"-e"))){
