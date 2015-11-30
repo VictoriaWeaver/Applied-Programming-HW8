@@ -45,7 +45,6 @@ int main(int argc, char *argv[]){
 				DArray XArray;
 				DArray YArray;
 
-				int lcv;
 
 				/* Initial Size of 100 */	
 				CreateDArray(&XArray, 100);
@@ -141,24 +140,63 @@ int main(int argc, char *argv[]){
 			else{
 				/* Declare variables to be read from sparameters file */
 				double X0, X1, a, b, c, d;
+				double evalPoint, solution;
 
 				/* Create a Dynamic Array to read in the data */
-				DArray *DArrayPtr;
+				DArray X0Array, aValues, bValues, cValues, dValues;
 
-				DArrayPtr = NULL;
+				/* Splines */
+				CSplines splines;
+
 
 				/* Initial Size of 100 */	
-				CreateDArray(DArrayPtr, 100);
+				CreateDArray(&X0Array, 100);
+				CreateDArray(&aValues, 100);
+				CreateDArray(&bValues, 100);
+				CreateDArray(&cValues, 100);
+				CreateDArray(&dValues, 100);
+
+				/* Read the data- note, the X1 value is read but only the last one is used */
+				while(fscanf(splineFile, "%lf %lf %lf %lf %lf %lf", &X0, &X1, &d, &c, &b, &a ) != EOF){
+					/* Push the data to the arrays */
+					PushToDArray(&X0Array, &X0);
+					PushToDArray(&aValues, &a);
+					PushToDArray(&bValues, &b);
+					PushToDArray(&cValues, &c);
+					PushToDArray(&dValues, &d);
+				}
+
+				s_alloc(&splines, X0Array.EntriesUsed);
+
+				/* Copy the data to the spline structure */
+				memcpy(splines.X, X0Array.Payload, X0Array.EntriesUsed * sizeof(double));
+				memcpy(splines.a, aValues.Payload, aValues.EntriesUsed * sizeof(double));
+				memcpy(splines.b, bValues.Payload, bValues.EntriesUsed * sizeof(double));
+				memcpy(splines.c, cValues.Payload, cValues.EntriesUsed * sizeof(double));
+				memcpy(splines.d, dValues.Payload, dValues.EntriesUsed * sizeof(double));
+
+				/* Get the last X point */
+				splines.X[(splines.N)] = X1;
 
 
 
-				/* the splines to standard out 
-            	of the form:  X0 X1 d c b a */
+				/* Read from the evalFile */
+				while(fscanf(evalFile, "%lf", &evalPoint)!=EOF){
+					
+					solution = cspline_eval(evalPoint, &splines);
+					
+					fprintf(stdout, "Solution: %lf\n", solution);
+
+				}
 
 
 				/* Free the DArray */
-				DestroyDArray(DArrayPtr);
- 
+				DestroyDArray(&X0Array);
+				DestroyDArray(&aValues);
+ 				DestroyDArray(&bValues);
+ 				DestroyDArray(&cValues);
+ 				DestroyDArray(&dValues);
+
 
 			}
 

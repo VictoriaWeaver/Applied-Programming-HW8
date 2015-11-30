@@ -145,7 +145,7 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
   N = (splines->N);
 
   /* Size of h = size of splines */
-  h = malloc((N-1) * sizeof(double));
+  h = malloc(N * sizeof(double));
   
 
   if(NULL == h){
@@ -178,13 +178,14 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
                                               -----------      ------------ , j= 1..N-1
                                                  hj            hj -1 */
   for(lcv = 1; lcv < N; lcv++){
-    alpha[lcv] = 3.0 * (((data->Y[lcv+1] - data->Y[lcv]) / h[lcv]) + ((data->Y[lcv] - data->Y[lcv-1])/h[lcv-1]));
+    alpha[lcv] = 3.0 * (((data->Y[lcv+1] - data->Y[lcv]) / h[lcv]) - ((data->Y[lcv] - data->Y[lcv-1])/h[lcv-1]));
   }
     
   /*  alphan = 3(yn' - (yn - yn-1)  )
                          ----------
                            hn-1             */
-  alpha[N] = 3.0 * (data->yn - (data->Y[N] - data->Y[N-1])/h[N-1]);
+  alpha[N] = 3.0 * (data->yn - ((data->Y[N] - data->Y[N-1])/h[N-1]));
+
 
   p = malloc(N * sizeof(double));
   q = malloc((N+1) * sizeof(double));
@@ -207,11 +208,12 @@ void cspline_clamped( Points* data, double fpa, double fpb, CSplines* splines){
     q[lcv] = 2.0 * (h[lcv-1] + h[lcv]);
   }
 
-  q[N-1] = 2 * h[N-1];
-    
+  q[N] = 2 * h[N-1];
+
+   
   /* Use the general tri-diagonal solver to find spline data c */
-  tridiagonal(p, q, r, c, alpha, N);
-    
+  tridiagonal(p, q, r, c, alpha, N+1);
+
   /* Copy the solution of the tri-diagonal value c into the spline structure */
   memcpy(splines->c, c, ((N+1) * sizeof(double)));
 
@@ -274,10 +276,11 @@ void cspline_nak( Points* data, CSplines* splines ){
     return;
   }
 
-  for(lcv = 0; lcv < N-1; lcv++){
-    alpha[lcv] = 3.0 * (((data->Y[lcv+1] - data->Y[lcv]) / h[lcv]) + ((data->Y[lcv] - data->Y[lcv-1])/h[lcv-1]));
+  for(lcv = 1; lcv < N; lcv++){
+    alpha[lcv-1] = 3.0 * (((data->Y[lcv+1]-data->Y[lcv])/h[lcv]) - ((data->Y[lcv] - data->Y[lcv-1])/h[lcv-1]));
   }
-    
+ 
+
   /* Find the tri-diagonal matrix and solve for c */
   /* Generate the outside symmetric tri-diagonal matrix */
   p = malloc((N-2) * sizeof(double));
@@ -290,16 +293,16 @@ void cspline_nak( Points* data, CSplines* splines ){
     return;
   }
   
-  memcpy(&p[1], &h[2], (N-3) * sizeof(double));
-  memcpy(r, &h[1], (N-3) * sizeof(double));
+  memcpy(&r[1], &h[2], (N-3) * sizeof(double));
+  memcpy(p, &h[1], (N-3) * sizeof(double));
 
   /* Generate the extra bottom terms for knk 
          = h2 - hn-1**2/hn-2                 */
-  r[N-3] = h[N-2] - ((h[N-1] * h[N-1]) / h[N-2]);
+  p[N-3] = h[N-2] - ((h[N-1] * h[N-1]) / h[N-2]);
     
   /* Generate the top terms for knk 
          = h1 - h0**2/h1                  */
-  p[0] = h[1] - ((h[0] * h[0]) / h[1]);
+  r[0] = h[1] - ((h[0] * h[0]) / h[1]);
 
     
   /* Generate the center diagonal of the symmetric tri-diagonal matrix, with extra terms 
@@ -313,7 +316,11 @@ void cspline_nak( Points* data, CSplines* splines ){
   }
   
   q[N-2] = (3.0 * h[N-1]) + (2.0 * h[N-2]) + (h[N-1] * h[N-1] / h[N-2]);    
-    
+  
+  
+  
+
+
   /* Use the general tri-diagonal solver, find spline value c, results returned in vector c */
   tridiagonal(p ,q, r, c, alpha, N-1);
     
@@ -323,6 +330,13 @@ void cspline_nak( Points* data, CSplines* splines ){
  
   /* Copy the solution of the tri-diagonal value c into the spline structure */
   memcpy(splines->c, c, ((N-1) * sizeof(double)));
+
+
+  fprintf(stdout, "C vector\n");
+
+  for(lcv = 0; lcv < N; lcv++){
+    fprintf(stdout, "%f\n", splines->c[lcv]);
+  }
  
   /* Solve for A, B, and D. */
   polySolve(splines, h, data);
@@ -473,7 +487,7 @@ void tridiagonal(double *p, double *q, double *r, double* x, double *B, int N){
 void polySolve(CSplines *splines, double *h, Points *points){
   int lcv; /* Loop counting variable */
 
-  for(lcv = 0; lcv < (splines->N)-1; lcv++){
+  for(lcv = 0; lcv < (splines->N); lcv++){
     /*  aj = yj */
     splines->a[lcv] = points->Y[lcv];
        
@@ -504,9 +518,12 @@ void polySolve(CSplines *splines, double *h, Points *points){
 *****************************************************************************************/
 void printSplines(CSplines *splines){
     int lcv;  /* Loop counting variable */
+    int N;
 
-    for(lcv = 0; lcv < (splines->N); lcv++){
-      fprintf(stdout, "%f %f %f %f %f %f\n", splines->X[lcv], splines->X[lcv+1],  
+    N = splines->N;
+
+    for(lcv = 0; lcv < N; lcv++){
+        fprintf(stdout, "%f %f %f %f %f %f\n", splines->X[lcv], splines->X[lcv+1],  
                 splines->d[lcv], splines->c[lcv], splines->b[lcv], splines->a[lcv]);
     }
 }
