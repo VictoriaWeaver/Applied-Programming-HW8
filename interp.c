@@ -100,11 +100,11 @@ void cspline_natural(Points* data, CSplines* splines){
   tridiagonal(p, q, r, c, alpha, N-1);
        
   /* Copy the solution of the tri-diagonal value c into the spline structure */
-  memcpy(&(splines->c[1]), c, (N-2)*sizeof(double));
+  memcpy(&(splines->c[1]), c, (N-1)*sizeof(double));
 
   /* Initial "c" condition, zero curvature at the end points */
   splines->c[0] = 0.0;
-  splines->c[N-2] = 0.0;
+  splines->c[N] = 0.0;
 
   /* Solve for A, B, and D. */
   polySolve(splines, h, data);
@@ -317,27 +317,21 @@ void cspline_nak( Points* data, CSplines* splines ){
   
   q[N-2] = (3.0 * h[N-1]) + (2.0 * h[N-2]) + (h[N-1] * h[N-1] / h[N-2]);    
   
-  
-  
-
 
   /* Use the general tri-diagonal solver, find spline value c, results returned in vector c */
   tridiagonal(p ,q, r, c, alpha, N-1);
     
   /* Set the C vector into the points 
-                = 1 + h1/h0* c0 - h0/h1 * c1              */
- 
+              c0  = c1 + (c1 - c2)*(h0/h1)              */
+  splines->c[0] = c[0] + (c[0] - c[1])*(h[0]/h[1]);
  
   /* Copy the solution of the tri-diagonal value c into the spline structure */
-  memcpy(splines->c, c, ((N-1) * sizeof(double)));
+  memcpy(&(splines->c[1]), c, ((N-1) * sizeof(double)));
+
+  splines->c[N] = (c[N-2] - c[N-3]) * h[N-1] / h[N-2] + c[N-2];
 
 
-  fprintf(stdout, "C vector\n");
 
-  for(lcv = 0; lcv < N; lcv++){
-    fprintf(stdout, "%f\n", splines->c[lcv]);
-  }
- 
   /* Solve for A, B, and D. */
   polySolve(splines, h, data);
 
