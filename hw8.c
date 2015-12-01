@@ -81,27 +81,18 @@ int main(int argc, char *argv[]){
 
 				/* not-a-knot splines method */
 				if(0 == strcmp(argv[1], "-nak")){
-
-					fprintf(stdout, "Not-a-knot method: \n");
-
 					cspline_nak(&data, &splines);
 					printSplines(&splines);
 				}
 
 				/* natural splines method */
 				if(0 == strcmp(argv[1],"-nat")){
-
-					fprintf(stdout, "Natural method: \n");
-
 					cspline_natural(&data, &splines);
 					printSplines(&splines);
 				}
 
 				/* clamped splines method */
 				if(0 == strcmp(argv[1],"-cl")){
-
-					fprintf(stdout, "Clamped method: \n");
-
 					cspline_clamped(&data, dA, dB, &splines); 
 					printSplines(&splines);
 				}
