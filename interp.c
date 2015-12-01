@@ -362,7 +362,6 @@ double cspline_eval( double x, CSplines* splines){
   minBound = splines->X[0];
 
   if(x < minBound){
-    fprintf(stderr, "ERROR: Minimum Bound\n");
     return NAN;
   }
 
@@ -372,9 +371,7 @@ double cspline_eval( double x, CSplines* splines){
       break;
     }
 
-    /* Note does not check for the last point, so the last spline will never be evaluated: NEEDS FIX */
     if(lcv == (splines->N)-1){
-      fprintf(stderr, "ERROR: Maximum Bound\n");
       return NAN;
     }
 

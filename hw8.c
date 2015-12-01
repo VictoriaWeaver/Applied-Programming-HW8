@@ -116,10 +116,10 @@ int main(int argc, char *argv[]){
 		else if((4 == argc) && (0 == strcmp(argv[1],"-e"))){
 			/* Declare pointer to file object */
 			FILE *splineFile, *evalFile;
-
+		
 			/* Attempt to open the files */
 			splineFile = fopen(argv[2], "r");
-			evalFile = fopen(argv[2], "r");
+			evalFile = fopen(argv[3], "r");
 
 			/* Check if opened properly */
 			if((NULL == splineFile) || (NULL == evalFile)){
@@ -169,14 +169,17 @@ int main(int argc, char *argv[]){
 				/* Get the last X point */
 				splines.X[(splines.N)] = X1;
 
-
-
 				/* Read from the evalFile */
 				while(fscanf(evalFile, "%lf", &evalPoint)!=EOF){
 					
 					solution = cspline_eval(evalPoint, &splines);
 					
-					fprintf(stdout, "%lf %lf\n", evalPoint, solution);
+					if(NAN != solution){
+						fprintf(stdout, "%lf %lf\n", evalPoint, solution);
+					}
+					else{
+						fprintf(stdout, "%lf ERROR: Out of Bounds\n", evalPoint);
+					}
 
 				}
 
