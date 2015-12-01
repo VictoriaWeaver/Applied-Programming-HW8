@@ -185,7 +185,7 @@ int main(int argc, char *argv[]){
 					
 					solution = cspline_eval(evalPoint, &splines);
 					
-					fprintf(stdout, "Solution: %lf\n", solution);
+					fprintf(stdout, "%lf %lf\n", evalPoint, solution);
 
 				}
 
