@@ -34,7 +34,7 @@ int main(void)
   fprintf(pipe,"set terminal x11 font 'Vera.ttf'\n");
 #endif
   /* gnuplot: send output to png file with desired font */
-  fprintf(pipe,"set terminal png enhanced font 'Vera.ttf'\n"); 
+  fprintf(pipe,"set terminal png enhanced font 'DejaVuSans.ttf'\n"); 
   fprintf(pipe,"set output 'splines.png' \n"); 
 
   /* gnuplot: set title, labels, legend  and line styles */
