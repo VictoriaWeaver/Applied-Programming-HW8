@@ -35,16 +35,41 @@ int main(void)
 #endif
   /* gnuplot: send output to png file with desired font */
   fprintf(pipe,"set terminal png enhanced font 'Vera.ttf'\n"); 
-  fprintf(pipe,"set output 'splines.png' \n"); 
+  fprintf(pipe,"set output 'splines1.png' \n"); 
 
   /* gnuplot: set title, labels, legend  and line styles */
   fprintf(pipe,"set title 'Cubic spline interpolation result '\n");
   fprintf(pipe,"set xlabel 'x'\n");
   fprintf(pipe,"set ylabel 'f(x)'\n");
   fprintf(pipe,"set style data lines\n"); /* draw lines between data pts  */
-  fprintf(pipe,"set xrange [-2:2]\n");		/* set x range		  */ 
+  fprintf(pipe,"set xrange [-2:5]\n");		/* set x range		  */ 
   /* read data file with (x,y) points */
-  fprintf(pipe,"plot 'curve.txt' using 1:2 lt 1 lw 2 t 'cubic spline' \n");
+  fprintf(pipe,"plot 'plotPoints.txt' using 1:2 lt 1 lw 2 t 'cubic spline' \n");
+
+  /*************************************/
+  fprintf(pipe,"set output 'splines2.png' \n");
+
+  /* gnuplot: set title, labels, legend  and line styles */
+  fprintf(pipe,"set title 'Cubic spline interpolation result '\n");
+  fprintf(pipe,"set xlabel 'x'\n");
+  fprintf(pipe,"set ylabel 'f(x)'\n");
+  fprintf(pipe,"set style data lines\n"); /* draw lines between data pts  */
+  fprintf(pipe,"set xrange [-2:5]\n");          /* set x range            */
+  /* read data file with (x,y) points */
+  fprintf(pipe,"plot 'plotPoints.txt' using 3:4 lt 1 lw 2 t 'cubic spline' \n");
+
+  /*************************************/
+  fprintf(pipe,"set output 'splines3.png' \n");
+
+  /* gnuplot: set title, labels, legend  and line styles */
+  fprintf(pipe,"set title 'Cubic spline interpolation result '\n");
+  fprintf(pipe,"set xlabel 'x'\n");
+  fprintf(pipe,"set ylabel 'f(x)'\n");
+  fprintf(pipe,"set style data lines\n"); /* draw lines between data pts  */
+  fprintf(pipe,"set xrange [-2:5]\n");          /* set x range            */
+  /* read data file with (x,y) points */
+  fprintf(pipe,"plot 'plotPoints.txt' using 5:6 lt 1 lw 2 t 'cubic spline' \n");
+
 
 /* Close pipe */
   pclose(pipe);
