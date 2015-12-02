@@ -1,0 +1,20 @@
+Victoria Weaver
+Applied Programming
+Fall 2015
+HW8 Analysis
+
+Analysis:
+In implementing this program, each method was approached individually.  There was much confusion initially with all the indices given in the notes for implementation, but eventually it was resolved.  A noteable difference in each method falls in the initial conditions for each in the C vector and in the alpha vector.  For example, the natural method required the C vector to be 0 at the ends.  Another noteable aspect of the implementation was the reliance of the calculations of certain values on values that are not plotted, e.g. the extra C-value used to calculate the C value for the last spline.  This issue at first caused confusion in regards to the bounds of the calculations.
+
+To read in the data to calculate the splines, DynamicArrays (from HW1) was used to read in an unknown number of points.  Because the number of points is unknown, this accounted for the correct allocation of memory.  The EntriesUsed property of the DynamicArrays was used as the parameters in p_alloc and s_alloc (in s_alloc: EntriesUsed-1).  To make DynamicArrays compatible with reading in doubles rather than strings, the Data struct was ignored and the type of the Payload property was changed to double from Data.  After reading in the data from data.txt to the arrays, the values were copied into the points and splines structs.  Each method was used to calculate the splines and output to the file sparameters?.txt, where ?=1 ?=2 ?=3 for the natural, clamped, and not-a-knot methods respectively.
+
+Valgrind was used to verify the lack of memory leaks in the program, and with one exception, no leaks were found.**
+
+To verify the splines calculations, the matlab program (as well as the given output sent out by Prof. Repka) was used to compare values.  To further verify the splines, the cspline_eval function was used to evaluate the splines at six different points (for each method).  Two points were designed to be out of the minimum and maximum bounds, three of the points at partitions of the splines (at the X bounds for each spline), and one point inside the bounds of a spline.  Each method was verified in this manner and the output redirected to the file eresults?.txt, where the ? follows the same naming scheme previously mentioned.
+
+The plotsplines.c file was used to generate plots of the splines.  To obtain decent plots, the splines needed to be evaluated at very close points, so a short script was written to generate a set of points 0 to 3.14 in steps of 0.00125.  The output of the script was redirected to points.txt.  For the two methods whose plots were requested, the points in points.txt were evaluated in the spline functions.  The output of this was stored to nat.txt and nak.txt.  Two files were pasted together in plotPoints.txt to be plotted on the same graph.  Plotsplines was modified to plot both sets of data on the same plot.  The plot can be seen in splines.png.**
+
+**Things to Note:
+In the process of checking for memory leaks, it was brought to attention that both the fprintf and fscanf functions contained memory leaks that could not be fixed.  Also note that in the png plot, thetwo
+graphs are overlapping and it seems like only one is there.  I tried to look for a way to change the color of the second graph but no method was found.  Both of these issues were brought before Prof. Repk
+a who could not remedy either problem.  I was instructed to note both of these issues in the analysis.
