@@ -37,7 +37,8 @@ evaluate: hw8
 	./hw8 -e sparameters3.txt $(EFILE) > eresults3.txt
 
 plots:
-
+	$(CC) $(CFLAGS) plotsplines.c -o plotsplines
+	./plotsplines
 
 ## Cleaning up auxiliary files 31 
 clean:
